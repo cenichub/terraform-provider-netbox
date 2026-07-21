@@ -56,15 +56,22 @@ func TestAccProvider_ConnectsToNetbox(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				// A bare `provider "netbox" {}` block forces Terraform to
-				// instantiate and Configure the provider during plan, which
-				// exercises the URL + token round-trip against /api/status/.
-				// The provider reads url/token from NETBOX_URL/NETBOX_TOKEN.
+				// Referencing any resource of the provider forces
+				// Terraform to instantiate and Configure it during plan,
+				// which exercises the URL + token round-trip against
+				// /api/status/. PlanOnly ensures no resource is actually
+				// created. The provider reads url/token from
+				// NETBOX_URL/NETBOX_TOKEN.
 				Config: `
 					provider "netbox" {}
 
-					data "netbox_example" "connect" {}
+					resource "netbox_custom_object_type" "connect" {
+					  name = "tfacc_provider_connect"
+					  slug = "tfacc-provider-connect"
+					}
 				`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
