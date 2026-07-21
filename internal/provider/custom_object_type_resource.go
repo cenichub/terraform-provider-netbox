@@ -441,6 +441,14 @@ func apiToState(ctx context.Context, api *customObjectTypeAPI, state *CustomObje
 	state.VerboseNamePlural = types.StringValue(api.VerboseNamePlural)
 	state.Version = types.StringValue(api.Version)
 
+	// When the API returns no tags, surface state as null (rather than an
+	// empty set) so plans that omit `tags` remain consistent with state
+	// after apply.
+	if len(api.Tags) == 0 {
+		state.Tags = types.SetNull(types.StringType)
+		return diags
+	}
+
 	slugs := make([]string, 0, len(api.Tags))
 	for _, t := range api.Tags {
 		slugs = append(slugs, t.Slug)
