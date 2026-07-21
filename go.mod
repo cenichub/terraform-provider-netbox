@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-scaffolding-framework
+module github.com/cenichub/terraform-provider-netbox
 
 go 1.25.8
 
